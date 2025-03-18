@@ -22,6 +22,17 @@ import triton.language as tl
 from einops import rearrange
 
 
+def is_hopper_gpu():
+    if torch.cuda.is_available():
+        device_capability = torch.cuda.get_device_capability()
+        major, minor = device_capability
+        return major == 9
+    return False
+
+
+IS_HOPPER_GPU = is_hopper_gpu()
+
+
 @triton.jit
 def prefill_kernel(
     q_ptr,  # Q: b x n x h x d
@@ -182,11 +193,11 @@ def triton_flash_prefill(
         batch_size * num_q_heads,
     )
     # set num_warps=4 if headdim=64 and num_warps=8 if headdim=128
-    num_warps = 4 if head_dim <= 64 else 8
     BLOCK_SIZE_Q = min(
         128, max(16, triton.next_power_of_2(q_len))
     )  # min block size of tl.dot: 16
     BLOCK_SIZE_K = 128
+    num_warps, num_stages = get_num_warps_stages(head_dim, BLOCK_SIZE_Q, IS_HOPPER_GPU)
     prefill_kernel[grid](
         q,
         k,
@@ -221,7 +232,7 @@ def triton_flash_prefill(
         BLOCK_SIZE_Q=BLOCK_SIZE_Q,
         BLOCK_SIZE_K=BLOCK_SIZE_K,
         num_warps=num_warps,
-        num_stages=3,
+        num_stages=num_stages,
     )
     return o
 
@@ -1108,6 +1119,47 @@ def block_wise_prefill_attention_kernel(
     tl.store(o_ptrs, acc_o.to(tl.bfloat16), boundary_check=(0,))
 
 
+def get_num_warps_stages(head_dim, block_size, is_hopper_gpu):
+    """
+    Returns recommended num_warps and num_stages for a Sparse Attention kernel in Triton.
+
+    Args:
+        head_dim (int): Size of the head dimension.
+        block_size (int): Size of the block in the attention matrix.
+        is_hopper_gpu (bool): True if Hopper GPU, False if Ampere GPU.
+
+    Returns:
+        tuple: (num_warps, num_stages) recommended values.
+    """
+    # Determine if head_dim and block_size exceed 64
+    head_large = head_dim > 64
+    block_large = block_size > 64
+
+    if is_hopper_gpu:
+        # Hopper GPU recommendations
+        if head_large and block_large:
+            num_warps = 8
+            num_stages = 3
+        elif head_large or block_large:
+            num_warps = 4
+            num_stages = 3
+        else:
+            num_warps = 2
+            num_stages = 2
+    else:
+        # Ampere GPU recommendations
+        if head_large and block_large:
+            num_warps = 8
+            num_stages = 3
+        elif head_large or block_large:
+            num_warps = 8
+            num_stages = 3
+        else:
+            num_warps = 2
+            num_stages = 2
+    return num_warps, num_stages
+
+
 def triton_block_wise_prefill_attention(
     q: torch.Tensor,
     k: torch.Tensor,
@@ -1143,7 +1195,7 @@ def triton_block_wise_prefill_attention(
         32,
         64,
         128,
-    }, "only support block size in {16, 32, 64, 128}"
+    }, "only support block size in {32, 64, 128}"
     total_q_blocks = triton.cdiv(grid_offset, block_size) + triton.cdiv(
         q_len - grid_offset, block_size
     )
@@ -1186,8 +1238,7 @@ def triton_block_wise_prefill_attention(
         idx_bins = torch_column_count_cumsum(block_idx, total_k_blocks)
     # launch attention kernel
     o = torch.empty_like(q)
-    num_warps = 8
-    num_stages = 3 if block_size >= 128 else 5
+    num_warps, num_stages = get_num_warps_stages(head_dim, block_size, IS_HOPPER_GPU)
     block_wise_prefill_attention_kernel[(batch_size, num_q_heads, total_q_blocks)](
         q,
         k,
