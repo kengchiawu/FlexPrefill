@@ -1,5 +1,13 @@
 <h1 align="center">FlexPrefill</h1>
 
+<div align="center">
+    
+[![arxiv](https://img.shields.io/badge/arXiv-2502.20766-b31b1b.svg)](https://arxiv.org/abs/2502.20766)
+[![openreview](https://img.shields.io/badge/OpenReview-Paper-COLOR.svg)](https://openreview.net/forum?id=OfjIlbelrT)
+
+</div>
+
+
 This repository provides the code for the paper [FlexPrefill: A Context-Aware Sparse Attention Mechanism for Efficient Long-Sequence Inference](https://openreview.net/forum?id=OfjIlbelrT). 
 
 **FlexPrefill** is selected as **Oral** Presentation(1.77%) at **ICLR 2025**!
