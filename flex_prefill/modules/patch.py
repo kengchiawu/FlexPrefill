@@ -17,6 +17,7 @@ import json
 import os
 import types
 import warnings
+import functools
 
 import torch
 from transformers import PreTrainedModel
@@ -162,7 +163,11 @@ def patch_llama_attention(model: PreTrainedModel, pattern: str):
         llama_causal_model_forward,
     )
 
-    model.forward = types.MethodType(llama_causal_model_forward, model)
+    # multiple gpus inference using Accelerate
+    if isinstance(model.forward, functools.partial):
+        model.forward.__wrapped__ = types.MethodType(llama_causal_model_forward, model)
+    else:
+        model.forward = types.MethodType(llama_causal_model_forward, model)
 
     from flex_prefill.modules.llama.llama_mlp_forward import llama_mlp_forward
 
@@ -280,7 +285,11 @@ def patch_qwen2_attention(model: PreTrainedModel, pattern: str):
         qwen2_causal_model_forward,
     )
 
-    model.forward = types.MethodType(qwen2_causal_model_forward, model)
+    # multiple gpus inference using Accelerate
+    if isinstance(model.forward, functools.partial):
+        model.forward.__wrapped__ = types.MethodType(qwen2_causal_model_forward, model)
+    else:
+        model.forward = types.MethodType(qwen2_causal_model_forward, model)
 
 
 def disable_hf_flash_attention_check():
