@@ -17,6 +17,9 @@ setup(
     name="flex_prefill",
     version="0.1.0",
     packages=find_packages(),
+    package_data={
+        "flex_prefill.ops.minfer": ["config/*.json"],
+    },
     install_requires=["transformers==4.44.0", "triton==3.0.0", "einops"],
     author="XunhaoLai",
     author_email="laixunhao@pku.edu.cn",
