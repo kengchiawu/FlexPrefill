@@ -26,6 +26,13 @@ To use FlexPrefill, you will need the following packages:
 - `flash_attn==2.6.3` (optional)
 - `vllm==0.5.4` (optional)
 
+## Installation
+
+You can install FlexPrefill using pip:
+```shell
+pip install git+https://github.com/bytedance/FlexPrefill.git
+```
+
 ## Quick Start
 
 ### Example Test
