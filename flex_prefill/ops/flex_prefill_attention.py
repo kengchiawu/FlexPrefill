@@ -84,7 +84,16 @@ def get_num_warps_stages(head_dim, block_size, gpu_name):
             num_warps = 2
             num_stages = 2
     else:
-        num_warps, num_stages = 8, 2
+        # use default setting, maybe not optimal
+        if head_large and block_large:
+            num_warps = 8
+            num_stages = 2
+        elif head_large or block_large:
+            num_warps = 4
+            num_stages = 3
+        else:
+            num_warps = 2
+            num_stages = 2
     return num_warps, num_stages
 
 
