@@ -526,3 +526,4 @@ def patch_model(model, pattern: str, cfg: dict):
         patch_hf_model(model, pattern, cfg)
     else:
         patch_vllm_model(model, pattern, cfg)
+    return model
