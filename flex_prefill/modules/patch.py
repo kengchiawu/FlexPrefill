@@ -503,6 +503,25 @@ def patch_vllm_model(model, pattern: str, cfg: dict):
 
 
 def patch_model(model, pattern: str, cfg: dict):
+    """Patch the attention mechanism of a transformers model or vllm model to use a specified pattern.
+
+    Args:
+        model: The model to be patched. It must be either a `PreTrainedModel` from the Hugging Face transformers
+            library or a vllm model.
+        pattern (str): The attention pattern to apply to the model. Supported patterns include:
+            - 'default': Default attention mechanism with no additional configuration.
+            - 'flash': Flash attention mechanism with no additional configuration.
+            - 'streaming_llm': Streaming LLM attention with init tokens and local window.
+            - 'minfer': Minference attention with model-specific settings.
+            - 'flex_prefill': FlexPrefill attention.
+        cfg (dict): Configuration settings for the specified pattern. The required keys and values depend on
+            the chosen pattern. For example:
+            - 'streaming_llm': {'global_window': 1024, 'local_window': 8192}
+            - 'minfer' : {'model_type': 'llama3.1'}, supported model_type: llama3.1, qwen2, yi, glm4
+            - 'flex_prefill': {'block_size': 128, 'flex_prefill_gamma': 0.9, 'flex_prefill_tau': 0.1,
+                              'flex_prefill_min_budget': 512, 'flex_prefill_max_budget': 32768}
+            Refer to `flex_prefill.modules.patch.ATTENTION_CONFIG_EXAMPLE` for full details on supported patterns and their configurations.
+    """
     if isinstance(model, PreTrainedModel):
         patch_hf_model(model, pattern, cfg)
     else:
