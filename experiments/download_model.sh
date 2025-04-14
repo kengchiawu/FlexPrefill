@@ -13,13 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # llama 3.1
-huggingface-cli download --resume-download meta-llama/Llama-3.1-8B-Instruct  --local-dir model/Llama-3.1-8B-Instruct --exclude "*.bin" --local-dir-use-symlinks False
-
+export HF_HOME=/root/autodl-tmp/cache/
+#export HF_ENDPOINT="https://hf-mirror.com"
+huggingface-cli download --resume-download meta-llama/Llama-3.1-8B-Instruct  --exclude "*.bin" #--local-dir-use-symlinks False
+#--local-dir model/Llama-3.1-8B-Instruct 
 # glm4
-huggingface-cli download --resume-download THUDM/glm-4-9b-chat-1m  --local-dir model/glm-4-9b-chat-1m --exclude "*.bin" --local-dir-use-symlinks False
+#huggingface-cli download --resume-download THUDM/glm-4-9b-chat-1m  --local-dir model/glm-4-9b-chat-1m --exclude "*.bin" --local-dir-use-symlinks False
 
 # yi 200k
-huggingface-cli download --resume-download 01-ai/Yi-9B-200K  --local-dir model/Yi-9B-200K --exclude "*.bin" --local-dir-use-symlinks False
+#huggingface-cli download --resume-download 01-ai/Yi-9B-200K  --local-dir model/Yi-9B-200K --exclude "*.bin" --local-dir-use-symlinks False
 
 # qwen2
-huggingface-cli download --resume-download Qwen/Qwen2-7B-Instruct  --local-dir model/Qwen2-7B-Instruct --exclude "*.bin" --local-dir-use-symlinks False
+#huggingface-cli download --resume-download Qwen/Qwen2-7B-Instruct  --local-dir model/Qwen2-7B-Instruct --exclude "*.bin" --local-dir-use-symlinks False

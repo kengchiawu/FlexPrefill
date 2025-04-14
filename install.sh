@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-pip3 install packaging -i https://pypi.org/simple
-pip3 install numpy==1.26.4 -i https://pypi.org/simple
-pip3 install torch==2.4.0 -i https://pypi.org/simple
-pip3 install triton==3.0.0 -i https://pypi.org/simple
-pip3 install transformers==4.44.0 -i https://pypi.org/simple
-pip3 install Cython==3.0.11 -i https://pypi.org/simple
-pip install nemo-toolkit[all]==1.21 --no-deps -i https://pypi.org/simple
-pip3 install -r extra_requirements.txt -i https://pypi.org/simple
+pip3 install packaging #-i https://pypi.org/simple
+pip3 install numpy==1.26.4 #-i https://pypi.org/simple
+pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu118 #-i https://pypi.org/simple
+pip3 install triton==3.0.0 #-i https://pypi.org/simple
+pip3 install transformers==4.44.0 #-i https://pypi.org/simple
+pip3 install Cython==3.0.11 #-i https://pypi.org/simple
+pip install nemo-toolkit[all]==1.21 --no-deps #-i https://pypi.org/simple
+pip3 install -r extra_requirements.txt #-i https://pypi.org/simple
