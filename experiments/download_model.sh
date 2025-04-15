@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # llama 3.1
-export HF_HOME=/root/autodl-tmp/cache/
+#export HF_HOME=/root/autodl-tmp/cache/
 #export HF_ENDPOINT="https://hf-mirror.com"
-huggingface-cli download --resume-download meta-llama/Llama-3.1-8B-Instruct  --exclude "*.bin" #--local-dir-use-symlinks False
-#--local-dir model/Llama-3.1-8B-Instruct 
+huggingface-cli download --resume-download meta-llama/Llama-3.1-8B-Instruct --local-dir /root/autodl-tmp/cache/model/Llama-3.1-8B-Instruct --exclude "*.bin" --local-dir-use-symlinks False
+# 
 # glm4
 #huggingface-cli download --resume-download THUDM/glm-4-9b-chat-1m  --local-dir model/glm-4-9b-chat-1m --exclude "*.bin" --local-dir-use-symlinks False
 
