@@ -170,5 +170,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-exprefiments/benchmark/ruler/data/.
-exprefiments/benchmark/infintebench/.
+./exprefiments/benchmark/ruler/data/.
+./exprefiments/benchmark/infintebench/.
