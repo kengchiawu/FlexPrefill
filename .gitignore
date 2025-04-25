@@ -172,3 +172,4 @@ cython_debug/
 
 ./exprefiments/benchmark/ruler/data/.
 ./exprefiments/benchmark/infintebench/.
+/experiments/
