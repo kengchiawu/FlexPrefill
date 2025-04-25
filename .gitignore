@@ -172,4 +172,6 @@ cython_debug/
 
 ./exprefiments/benchmark/ruler/data/.
 ./exprefiments/benchmark/infintebench/.
-/experiments/
+experiments/
+!experiments/benchmark/run_ruler.py
+!experiments/benchmark/run_infinitebench.py
