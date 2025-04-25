@@ -1711,6 +1711,7 @@ def get_active_blocks(
     avg_qk = torch.softmax(avg_qk, dim=-1, dtype=torch.float32)
     kl_div = square_root_js_divergence(avg_qk, vertical)
     block_sparse_mask = kl_div < tau
+    #raise ValueError(f"block_sparse_mask.shape:{block_sparse_mask.shape}")
     num_vertical_blocks[block_sparse_mask] = min_budget
     num_slash_blocks[block_sparse_mask] = min_budget
     # keep first vertical and slash block
@@ -1762,6 +1763,7 @@ def get_active_blocks(
         attn = torch.softmax(attn, dim=-1, dtype=torch.float32).view(-1)
         block_topk = score_cover_idx(attn, gamma * num_blocks)
         block_idx[b][h] = torch.unique(torch.cat((block_idx[b][h], block_topk), dim=-1))
+    #raise ValueError (f"block[0][0]:{block_idx[0][0]}\nblock[0][5]:{block_idx[0][5]}")
     return block_idx
 
 

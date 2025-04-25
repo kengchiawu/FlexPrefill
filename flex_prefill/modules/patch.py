@@ -108,6 +108,8 @@ def patch_model_config(model: PreTrainedModel, pattern: str, cfg: dict):
         #         cfg[k] = v
         for k, v in cfg.items():
             setattr(model.config, k, v)
+            print(f"load attr:{k},value:{v}")
+    model.config.timer = []
 
 
 def patch_llama_attention(model: PreTrainedModel, pattern: str):
@@ -152,6 +154,12 @@ def patch_llama_attention(model: PreTrainedModel, pattern: str):
         )
 
         new_forward_func = llama_flex_prefill_attention_forward
+    elif pattern == "headwise":
+        from flex_prefill.modules.llama.headwise_attention import (
+            llama_attn_forward_Headwise,
+        )
+
+        new_forward_func = llama_attn_forward_Headwise
     else:
         raise ValueError(f"unknown attention pattern {pattern}")
 

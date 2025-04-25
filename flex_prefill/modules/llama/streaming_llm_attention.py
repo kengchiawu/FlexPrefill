@@ -47,6 +47,14 @@ def llama_streaming_llm_attention_forward(
         Tuple[torch.Tensor, torch.Tensor]
     ] = None,  # will become mandatory in v4.45
 ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
+    
+    # 创建CUDA事件
+    start_event = torch.cuda.Event(enable_timing=True)
+    end_event = torch.cuda.Event(enable_timing=True)
+    # 同步并记录开始时间
+    torch.cuda.synchronize()
+    start_event.record()
+
     if isinstance(past_key_value, StaticCache):
         raise ValueError(
             "`static` cache implementation is not compatible with `attn_implementation==flash_attention_2` "
@@ -128,6 +136,7 @@ def llama_streaming_llm_attention_forward(
         value_states = value_states.to(target_dtype)
 
     if query_states.shape[1] > 1:
+        self.prelen = q_len
         attn_output = streaming_llm_attention(
             query_states,
             key_states,
@@ -143,5 +152,17 @@ def llama_streaming_llm_attention_forward(
 
     if not output_attentions:
         attn_weights = None
+
+    # 记录结束时间
+    end_event.record()
+    torch.cuda.synchronize()
+    
+    # 存储层计算时间
+    elapsed = start_event.elapsed_time(end_event)
+    self.config.timer.append({
+        'layer':self.layer_idx,
+        'time_ms':elapsed,
+        'step':(q_len - self.prelen)+1
+    })
 
     return attn_output, attn_weights, past_key_value
